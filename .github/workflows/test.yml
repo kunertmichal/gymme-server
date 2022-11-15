@@ -19,7 +19,7 @@ jobs:
               args: [--frozen-lockfile, --strict-peer-dependencies]
             - args: [--global, gulp, prettier, typescript]
       - name: Install packages
-        run: npm ci
+        run: pnpm install
       - name: Prettier
         run: pnpm run format
       - name: Lint
