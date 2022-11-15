@@ -10,8 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install packages
-        run: npm ci
+        run: pnpm ci
       - name: Prettier
-        run: npm run format
+        run: pnpm run format
       - name: Lint
-        run: npm run lint
+        run: pnpm run lint
