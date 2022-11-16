@@ -13,4 +13,11 @@ export class UserRepository {
   async findOne(id: number) {
     return this.prisma.user.findUnique({ where: { id } });
   }
+
+  async updateById(params: {
+    where: Prisma.UserWhereUniqueInput;
+    data: Prisma.UserUpdateInput;
+  }) {
+    return this.prisma.user.update(params);
+  }
 }
