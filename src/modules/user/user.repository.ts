@@ -9,4 +9,8 @@ export class UserRepository {
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
     return this.prisma.user.create({ data });
   }
+
+  async findOne(id: number) {
+    return this.prisma.user.findUnique({ where: { id } });
+  }
 }
