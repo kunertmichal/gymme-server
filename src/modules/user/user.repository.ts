@@ -23,8 +23,8 @@ export class UserRepository {
     }
   }
 
-  async findOne(email: string) {
-    return this.prisma.user.findUnique({ where: { email } });
+  async findOne(data: Prisma.UserWhereUniqueInput) {
+    return this.prisma.user.findUnique({ where: data });
   }
 
   async updateById(params: {

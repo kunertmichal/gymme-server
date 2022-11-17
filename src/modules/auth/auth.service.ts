@@ -26,7 +26,7 @@ export class AuthService {
   }
 
   async signInLocal(authDto: AuthDto): Promise<Tokens> {
-    const foundUser = await this.userService.findOne(authDto.email);
+    const foundUser = await this.userService.findOne({ email: authDto.email });
     if (!foundUser) {
       throw new UnauthorizedException();
     }

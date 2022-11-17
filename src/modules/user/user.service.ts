@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -11,8 +12,8 @@ export class UserService {
     return this.userRepository.createUser(user);
   }
 
-  async findOne(email: string) {
-    return this.userRepository.findOne(email);
+  async findOne(data: Prisma.UserWhereUniqueInput) {
+    return this.userRepository.findOne(data);
   }
 
   async update(id: number, data: UpdateUserDto) {
