@@ -80,7 +80,9 @@ export class AuthService {
           email,
         },
         {
-          expiresIn: 60 * 15,
+          expiresIn: this.configService.get<string>(
+            'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
+          ),
           secret: this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
         },
       ),
@@ -90,7 +92,9 @@ export class AuthService {
           email,
         },
         {
-          expiresIn: 60 * 60 * 24 * 7,
+          expiresIn: this.configService.get<string>(
+            'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+          ),
           secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
         },
       ),
