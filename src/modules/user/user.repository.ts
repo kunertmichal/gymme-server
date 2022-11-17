@@ -10,7 +10,7 @@ import { PrismaService } from '../../database/prisma.service';
 export class UserRepository {
   constructor(private prisma: PrismaService) {}
 
-  async createUser(data: Prisma.UserCreateInput): Promise<User | Error> {
+  async createUser(data: Prisma.UserCreateInput): Promise<User> {
     try {
       return await this.prisma.user.create({ data });
     } catch (error) {
@@ -23,8 +23,15 @@ export class UserRepository {
     }
   }
 
-  async findOne(id: number) {
-    return this.prisma.user.findUnique({ where: { id } });
+  async findOne(data: Prisma.UserWhereUniqueInput) {
+    return this.prisma.user.findUnique({ where: data });
+  }
+
+  async findOneWithoutSensitiveData(id: number) {
+    return this.prisma.user.findUnique({
+      where: { id },
+      select: { id: true, email: true },
+    });
   }
 
   async updateById(params: {
