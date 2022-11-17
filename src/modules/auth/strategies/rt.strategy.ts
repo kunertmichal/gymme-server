@@ -1,8 +1,9 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { JwtPayload, JwtPayloadWithRt } from '../types';
 
 @Injectable()
 export class RtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
@@ -14,8 +15,16 @@ export class RtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
     });
   }
 
-  validate(req: Request, payload: any) {
-    const refreshToken = req.get('authorization').replace('Bearer', '').trim();
+  validate(req: Request, payload: JwtPayload): JwtPayloadWithRt {
+    const refreshToken = req
+      ?.get('Authorization')
+      ?.replace('Bearer', '')
+      .trim();
+
+    if (!refreshToken) {
+      throw new ForbiddenException('Refresh token not provided');
+    }
+
     return {
       ...payload,
       refreshToken,
