@@ -1,4 +1,10 @@
-import { IsEmail, IsNumber, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsNumber,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 
 export class UpdateUserDto {
   @IsNumber()
@@ -10,4 +16,8 @@ export class UpdateUserDto {
   @IsString()
   @MinLength(8)
   password: string;
+
+  @IsString()
+  @IsOptional()
+  refreshToken;
 }

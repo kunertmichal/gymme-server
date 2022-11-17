@@ -10,7 +10,7 @@ import { PrismaService } from '../../database/prisma.service';
 export class UserRepository {
   constructor(private prisma: PrismaService) {}
 
-  async createUser(data: Prisma.UserCreateInput): Promise<User | Error> {
+  async createUser(data: Prisma.UserCreateInput): Promise<User> {
     try {
       return await this.prisma.user.create({ data });
     } catch (error) {
