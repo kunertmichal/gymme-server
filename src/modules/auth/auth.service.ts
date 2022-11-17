@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as argon2 from 'argon2';
@@ -48,7 +52,27 @@ export class AuthService {
     await this.userService.update(userId, { refreshToken: null });
   }
 
-  async getTokens(userId: number, email: string): Promise<Tokens> {
+  async refreshTokens(userId, refreshToken) {
+    const foundUser = await this.userService.findOne({ id: userId });
+    if (!foundUser || !foundUser.refreshToken) {
+      console.log(foundUser);
+      throw new ForbiddenException();
+    }
+
+    const doesRefreshTokenMatch = await argon2.verify(
+      foundUser.refreshToken,
+      refreshToken,
+    );
+    if (!doesRefreshTokenMatch) {
+      throw new ForbiddenException();
+    }
+
+    const tokens = await this.getTokens(userId, foundUser.refreshToken);
+    await this.saveRefreshToken(userId, tokens.refresh_token);
+    return tokens;
+  }
+
+  private async getTokens(userId: number, email: string): Promise<Tokens> {
     const [at, rt] = await Promise.all([
       this.jwtService.signAsync(
         {
@@ -78,7 +102,7 @@ export class AuthService {
     };
   }
 
-  async saveRefreshToken(userId: number, token: string) {
+  private async saveRefreshToken(userId: number, token: string) {
     const hashedToken = await argon2.hash(token);
     await this.userService.update(userId, {
       refreshToken: hashedToken,

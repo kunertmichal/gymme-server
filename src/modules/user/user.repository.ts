@@ -27,6 +27,13 @@ export class UserRepository {
     return this.prisma.user.findUnique({ where: data });
   }
 
+  async findOneWithoutSensitiveData(id: number) {
+    return this.prisma.user.findUnique({
+      where: { id },
+      select: { id: true, email: true },
+    });
+  }
+
   async updateById(params: {
     where: Prisma.UserWhereUniqueInput;
     data: Prisma.UserUpdateInput;

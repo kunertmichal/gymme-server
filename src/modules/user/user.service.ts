@@ -16,6 +16,10 @@ export class UserService {
     return this.userRepository.findOne(data);
   }
 
+  async findMe(id: number) {
+    return await this.userRepository.findOneWithoutSensitiveData(id);
+  }
+
   async update(id: number, data: UpdateUserDto) {
     return await this.userRepository.updateById({
       where: { id },

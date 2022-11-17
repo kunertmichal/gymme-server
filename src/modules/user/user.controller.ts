@@ -10,6 +10,6 @@ export class UserController {
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
   me(@GetCurrentUser('sub') userId: number) {
-    return this.userService.findOne({ id: userId });
+    return this.userService.findMe(userId);
   }
 }

@@ -24,5 +24,12 @@ export class AuthController {
     return this.authService.logout(userId);
   }
 
-  refresh() {}
+  @UseGuards(AuthGuard('jwt-refresh'))
+  @Post('refresh-tokens')
+  refreshToken(
+    @GetCurrentUser('sub') id: number,
+    @GetCurrentUser('refreshToken') refreshToken: string,
+  ) {
+    return this.authService.refreshTokens(id, refreshToken);
+  }
 }
