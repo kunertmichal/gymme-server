@@ -1,11 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as argon2 from 'argon2';
 import { AuthDto } from './dto';
 import { Tokens } from './types';
 import { UserService } from '../user/user.service';
-import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -22,8 +21,31 @@ export class AuthService {
       password: hashedPassword,
     });
     const tokens = await this.getTokens(newUser.id, newUser.email);
-    await this.saveRefreshToken(newUser, tokens.refresh_token);
+    await this.saveRefreshToken(newUser.id, tokens.refresh_token);
     return tokens;
+  }
+
+  async signInLocal(authDto: AuthDto): Promise<Tokens> {
+    const foundUser = await this.userService.findOne(authDto.email);
+    if (!foundUser) {
+      throw new UnauthorizedException();
+    }
+
+    const doesPasswordMatch = await argon2.verify(
+      foundUser.password,
+      authDto.password,
+    );
+    if (!doesPasswordMatch) {
+      throw new UnauthorizedException();
+    }
+
+    const tokens = await this.getTokens(foundUser.id, foundUser.email);
+    await this.saveRefreshToken(foundUser.id, tokens.refresh_token);
+    return tokens;
+  }
+
+  async logout(userId: number) {
+    await this.userService.update(userId, { refreshToken: null });
   }
 
   async getTokens(userId: number, email: string): Promise<Tokens> {
@@ -56,8 +78,10 @@ export class AuthService {
     };
   }
 
-  async saveRefreshToken(user: User, token: string) {
+  async saveRefreshToken(userId: number, token: string) {
     const hashedToken = await argon2.hash(token);
-    await this.userService.update({ ...user, refreshToken: hashedToken });
+    await this.userService.update(userId, {
+      refreshToken: hashedToken,
+    });
   }
 }

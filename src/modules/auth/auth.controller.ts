@@ -1,6 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { GetCurrentUser } from './decorators/get-current-user.decorator';
 import { AuthDto } from './dto';
 import { AuthService } from './auth.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -11,9 +13,16 @@ export class AuthController {
     return this.authService.signUpLocal(authDto);
   }
 
-  signInLocal() {}
+  @Post('local/sign-in')
+  signInLocal(@Body() authDto: AuthDto) {
+    return this.authService.signInLocal(authDto);
+  }
 
-  logOut() {}
+  @UseGuards(AuthGuard('jwt'))
+  @Post('logout')
+  logOut(@GetCurrentUser('sub') userId: number) {
+    return this.authService.logout(userId);
+  }
 
   refresh() {}
 }

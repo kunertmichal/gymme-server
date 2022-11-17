@@ -11,14 +11,14 @@ export class UserService {
     return this.userRepository.createUser(user);
   }
 
-  async findOne(userId: number) {
-    return this.userRepository.findOne(userId);
+  async findOne(email: string) {
+    return this.userRepository.findOne(email);
   }
 
-  async update(user: UpdateUserDto) {
+  async update(id: number, data: UpdateUserDto) {
     return await this.userRepository.updateById({
-      where: { id: user.id },
-      data: user,
+      where: { id },
+      data,
     });
   }
 }
